@@ -1,10 +1,11 @@
-# Welcome to your CDK Java project!
+# Sample Java Spring Boot based API Application on AWS Fargate using AWS CDK
 
-This is a Sample project for Java development with CDK.
+This is a sample AWS CDK (JAVA) project, which deployes a sample spring boot app to AWS fargate.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+It builds the java application directly from the assets provided in the application directory.
+Docker file is used to build the application.
 
-It is a [Maven](https://maven.apache.org/) based project, so you can open this project with any Maven compatible Java IDE to build and run tests.
+It creates all the associated networking constructs, enables port 80 and 443 for web access.
 
 ## Useful commands
 
@@ -19,4 +20,4 @@ Enjoy!
 
 ## Issues
 
-- Deployment infinity loop. (ECS fails and retries)
+* Deployment infinity loop. (ECS fails and retries)

@@ -10,6 +10,7 @@ import software.amazon.awscdk.services.ec2.SecurityGroupProps;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ClusterProps;
 import software.amazon.awscdk.services.ecs.ContainerImage;
+import software.amazon.awscdk.services.ecs.DeploymentCircuitBreaker;
 import software.amazon.awscdk.services.ecs.patterns.NetworkLoadBalancedFargateService;
 import software.amazon.awscdk.services.ecs.patterns.NetworkLoadBalancedFargateServiceProps;
 import software.amazon.awscdk.services.ecs.patterns.NetworkLoadBalancedTaskImageOptions;
@@ -28,13 +29,13 @@ public class CdkJavaStack extends Stack {
        Vpc vpc = new Vpc(this, "MyJavaAppVpc", VpcProps.builder().maxAzs(2).build());
 
        // Enable HTTP and HTTPS ports for webserver
-       SecurityGroup webserverSG = new SecurityGroup(this, "MyJavaAppWebSG", SecurityGroupProps.builder().allowAllOutbound(true).vpc(vpc).build());   
+       SecurityGroup webserverSG = new SecurityGroup(this, "WebSG", SecurityGroupProps.builder().allowAllOutbound(true).vpc(vpc).build());   
        
        // HTTP Rule    
        webserverSG.addIngressRule(Peer.anyIpv4(), Port.tcp(80));
        // HTTPS Rule
        webserverSG.addIngressRule(Peer.anyIpv4(), Port.tcp(443));
-
+       
        // Create the ECS Service
        Cluster cluster = new Cluster(this, "MyJavaAppEc2Cluster", ClusterProps.builder().vpc(vpc).build());
 
@@ -43,8 +44,10 @@ public class CdkJavaStack extends Stack {
                this,
                "MyJavaAppFargateService",
                NetworkLoadBalancedFargateServiceProps.builder()
+                       .circuitBreaker(DeploymentCircuitBreaker.builder().rollback(true).build())
                        .cluster(cluster)
                        .taskImageOptions(NetworkLoadBalancedTaskImageOptions.builder()
+                               .containerPort(80)
                                .image(ContainerImage.fromAsset("application"))
                                .build())
                        .build());
