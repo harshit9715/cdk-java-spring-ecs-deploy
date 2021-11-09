@@ -29,7 +29,7 @@ jobs:
       working-directory: application
       run: mvn -B package --file pom.xml
   
-  Validate_Stack:
+  validate_stack:
     name: Synth and validate CDK
     runs-on: ubuntu-latest
     environment: 
@@ -52,13 +52,38 @@ jobs:
       - name: CDK Synth
         id: cdk-synth-step
         run: cdk synth
+
+  list_changes:
+    name: List Changes in Stack
+    needs: [build, validate_stack]
+    runs-on: ubuntu-latest
+    environment: 
+      name: dev
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+          settings-path: ${{ github.workspace }} # location for the settings.xml file
+      - name: Install cdk
+        run: npm i -g aws-cdk
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
       - name: CDK Diff PR run
         id: cdk-diff-step
         run: cdk diff
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
     
       # - name: Comment on PR
       #   run: |
