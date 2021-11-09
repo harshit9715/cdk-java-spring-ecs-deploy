@@ -1,6 +1,6 @@
 # Welcome to your CDK Java project!
 
-This is a blank project for Java development with CDK.
+This is a Sample project for Java development with CDK.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -16,3 +16,7 @@ It is a [Maven](https://maven.apache.org/) based project, so you can open this p
  * `cdk docs`        open CDK documentation
 
 Enjoy!
+
+## Issues
+
+- Deployment infinity loop. (ECS fails and retries)
