@@ -49,10 +49,13 @@ jobs:
           settings-path: ${{ github.workspace }} # location for the settings.xml file
       - name: Install cdk
         run: npm i -g aws-cdk
-      - name: CDK Diff PR run
-        id: cdk-diff-step
-        run: cdk diff
+      - name: CDK Synth
+        id: cdk-synth-step
+        run: cdk synth
+      # - name: CDK Diff PR run
+      #   id: cdk-diff-step
+      #   run: cdk diff
     
-      - name: Comment on PR
-        run: |
-          echo ${{steps.cdk-diff-step.outputs.cdk-diff}}
+      # - name: Comment on PR
+      #   run: |
+      #     echo ${{steps.cdk-diff-step.outputs.cdk-diff}}
